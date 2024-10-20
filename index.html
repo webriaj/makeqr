@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            resize: vertical;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: auto;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>QR Code Generator</h1>
+        <p>Enter ID numbers line by line and generate QR codes easily</p>
+    </header>
+
+    <main>
+        <h2>Input ID Numbers</h2>
+        <textarea id="id-input" rows="10" placeholder="Enter ID numbers, one per line"></textarea>
+        <button onclick="generateQRCodes()">Generate QR Codes</button>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 WebRiaj. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function generateQRCodes() {
+            const input = document.getElementById('id-input').value;
+            const ids = input.split('\n').filter(id => id.trim() !== '');
+            let qrContent = '';
+
+            ids.forEach(id => {
+                // Generate the QR code using QRious
+                const qrCode = new QRious({
+                    value: id,
+                    size: 150
+                });
+
+                // Get the QR code as a data URL (base64 image)
+                const qrImage = qrCode.toDataURL();
+
+                // Create HTML for each QR code and corresponding ID
+                qrContent += `
+                    <div style="text-align: center; margin: 20px 0;">
+                        <img src="${qrImage}" alt="QR code for ${id}" style="display: block; margin: 0 auto;"/>
+                        <p>${id}</p>
+                    </div>
+                `;
+            });
+
+            // Open a new window and write the QR codes HTML into it
+            const qrWindow = window.open('', '_blank', 'width=400,height=600,scrollbars=yes');
+            qrWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Generated QR Codes</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                            .qr-container { text-align: center; }
+                            img { max-width: 100%; height: auto; }
+                            h1 { text-align: center; color: #4CAF50; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>QR Codes</h1>
+                        ${qrContent}
+                    </body>
+                </html>
+            `);
+            qrWindow.document.close();
+        }
+    </script>
+</body>
+</html>
